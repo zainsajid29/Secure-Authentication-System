@@ -1,23 +1,34 @@
-import json
+import streamlit as st
 from cryptography.fernet import Fernet
+import pyotp
 
-# 1. Aik Secret Key generate karein
-# Ye key data ko "lock" aur "unlock" karne ke kaam aati hai
-key = Fernet.generate_key()
-cipher_suite = Fernet(key)
+st.title("🔐 Secure Auth System - Internee.pk")
 
-# 2. Mockaroo wali file ko read karein
-with open('MOCK_DATA.json', 'r') as f:
-    users = json.load(f)
+# Sidebar for OAuth Info
+st.sidebar.info("OAuth Client ID: [APNI-ID-YAHAN-PASTE-KAREIN]")
 
-# 3. Har user ka password AES-256 ke zariye encrypt karein
-for user in users:
-    original_password = user['password'].encode() # Password ko byte mein convert kiya
-    encrypted_password = cipher_suite.encrypt(original_password) # Encrypt kiya
-    user['password'] = encrypted_password.decode() # Encrypted password ko wapis save kiya
+menu = ["Encryption Test", "2FA Verification"]
+choice = st.sidebar.selectbox("Select Security Task", menu)
 
-# 4. Encrypted data ko aik nayi file mein save karein
-with open('secure_users.json', 'w') as f:
-    json.dump(users, f, indent=4)
+if choice == "Encryption Test":
+    st.subheader("AES-256 Encryption")
+    text = st.text_input("Enter a password to encrypt:")
+    if st.button("Encrypt"):
+        key = Fernet.generate_key()
+        cipher = Fernet(key)
+        encrypted = cipher.encrypt(text.encode())
+        st.success(f"Encrypted: {encrypted.decode()}")
 
-print("Step 1 Done! 'secure_users.json' file is created and passwords are secure now.")
+elif choice == "2FA Verification":
+    st.subheader("Google Authenticator (2FA)")
+    # Logic from your auth_test.py
+    secret = pyotp.random_base32()
+    st.write(f"Secret Key: `{secret}`")
+    otp_input = st.text_input("Enter 6-digit OTP:")
+    if st.button("Verify"):
+        totp = pyotp.TOTP(secret)
+        if totp.verify(otp_input):
+            st.balloons()
+            st.success("Verified!")
+        else:
+            st.error("Invalid Code")
