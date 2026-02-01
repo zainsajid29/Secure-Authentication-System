@@ -5,7 +5,7 @@ import pyotp
 st.title("🔐 Secure Auth System - Internee.pk")
 
 # Sidebar for OAuth Info
-st.sidebar.info("OAuth Client ID: [APNI-ID-YAHAN-PASTE-KAREIN]")
+st.sidebar.info("OAuth Client ID: [1062713848522-da807lnlci1gtiq2i5g7vs64dlh0mu7i.apps.googleusercontent.com]")
 
 menu = ["Encryption Test", "2FA Verification"]
 choice = st.sidebar.selectbox("Select Security Task", menu)
