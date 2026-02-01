@@ -26,7 +26,7 @@ elif choice == "2FA Verification":
         st.session_state['2fa_secret'] = pyotp.random_base32()
 
     secret = st.session_state['2fa_secret']
-    st.write(f"Your Fixed Secret Key: `{secret}`")
+    st.write(f"Secret Key: `{secret}`")
     
     st.info("Step: Add this key to your Google Authenticator app first!")
 
@@ -38,4 +38,4 @@ elif choice == "2FA Verification":
             st.balloons()
             st.success("Success! 2FA Verified.")
         else:
-            st.error("Invalid Code. Make sure your mobile time is correct.")
+            st.error("Invalid Code.")
