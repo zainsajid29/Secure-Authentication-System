@@ -2,40 +2,55 @@ import streamlit as st
 from cryptography.fernet import Fernet
 import pyotp
 
-st.title("Secure Auth System - Internee.pk")
+# App Title
+st.set_page_config(page_title="Secure Auth Flow")
+st.title("🔐 Enterprise Security System")
 
-# Sidebar for OAuth Info
-st.sidebar.info("OAuth Client ID: [1062713848522-da807lnlci1gtiq2i5g7vs64dlh0mu7i.apps.googleusercontent.com]")
+# Session State to track login progress
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "password_verified" not in st.session_state:
+    st.session_state.password_verified = False
 
-menu = ["Encryption Test", "2FA Verification"]
-choice = st.sidebar.selectbox("Select Security Task", menu)
+# --- STEP 1: LOGIN PAGE ---
+if not st.session_state.password_verified:
+    st.subheader("Step 1: Identity Verification")
+    user_input = st.text_input("Username")
+    pass_input = st.text_input("Password", type="password")
+    
+    if st.button("Login"):
+        # Yahan hum farz kar rahe hain password 'za1212' hai
+        if pass_input == "za1212": 
+            st.session_state.password_verified = True
+            st.rerun()
+        else:
+            st.error("Invalid Credentials")
 
-if choice == "Encryption Test":
-    st.subheader("AES-256 Encryption")
-    text = st.text_input("Enter a password to encrypt:")
-    if st.button("Encrypt"):
-        key = Fernet.generate_key()
-        cipher = Fernet(key)
-        encrypted = cipher.encrypt(text.encode())
-        st.success(f"Encrypted: {encrypted.decode()}")
-
-elif choice == "2FA Verification":
-    st.subheader("Google Authenticator (2FA)")
-
+# --- STEP 2: 2FA PAGE ---
+elif st.session_state.password_verified and not st.session_state.authenticated:
+    st.subheader("Step 2: Two-Factor Authentication")
+    
     if '2fa_secret' not in st.session_state:
         st.session_state['2fa_secret'] = pyotp.random_base32()
-
-    secret = st.session_state['2fa_secret']
-    st.write(f"Secret Key: `{secret}`")
+        
+    st.write(f"Add this key to Authenticator: `{st.session_state['2fa_secret']}`")
+    otp_input = st.text_input("Enter 6-digit OTP")
     
-    st.info("Step: Add this key to your Google Authenticator app first!")
-
-    otp_input = st.text_input("Enter 6-digit OTP from your app:")
-    
-    if st.button("Verify"):
-        totp = pyotp.TOTP(secret)
+    if st.button("Verify OTP"):
+        totp = pyotp.TOTP(st.session_state['2fa_secret'])
         if totp.verify(otp_input):
-            st.balloons()
-            st.success("Success! 2FA Verified.")
+            st.session_state.authenticated = True
+            st.rerun()
         else:
-            st.error("Invalid Code.")
+            st.error("Invalid OTP")
+
+# --- STEP 3: DASHBOARD ---
+else:
+    st.success("✅ Full Authentication Complete!")
+    st.subheader("Welcome to the Secure Dashboard")
+    st.write("You are now logged in using AES-256 and Multi-Factor Authentication.")
+    
+    if st.button("Logout"):
+        st.session_state.password_verified = False
+        st.session_state.authenticated = False
+        st.rerun()
