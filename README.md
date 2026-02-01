@@ -17,7 +17,8 @@ This project was developed as part of my **Cyber Security Internship at Internee
 ### 3. OAuth 2.0 Integration (In Progress)
 - **Objective:** Provide seamless and secure social logins.
 - **Standard:** Using Google OAuth 2.0 protocols for user sign-ins.
-
+- **Client ID:** 1062713848522-da807lnlci1gtiq2i5g7vs64dlh0mu7i.apps.googleusercontent.com
+- 
 ## 🛠️ Tech Stack
 - **Language:** Python 3.x
 - **Libraries:** `cryptography`, `pyotp`, `json`
